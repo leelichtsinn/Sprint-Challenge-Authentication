@@ -1,4 +1,7 @@
 const axios = require('axios');
+const bcrypt = require('bcryptjs');
+
+const db = require('../database/dbConfig');
 
 const { authenticate } = require('../auth/authenticate');
 
@@ -13,7 +16,13 @@ function register(req, res) {
   const user = req.body;
   user.password = bcrypt.hashSync(user.password, 16);
 
-  
+  db('users').insert(user)
+    .then(user => {
+      res.json(user);
+    })
+    .catch(err => {
+      res.status(500).json({ message: 'Unable to register new user'});
+    });
 }
 
 function login(req, res) {
